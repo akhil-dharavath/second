@@ -1,33 +1,44 @@
 import React, { useEffect, useState } from "react";
 import BlogItem from "../components/BlogItem";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getAllBlogsApi } from "../api/blogs";
 
-const Blogs = ({ blogsList, setBlogsList }) => {
+const Blogs = () => {
+  const navigate = useNavigate();
   const location = useLocation().pathname.slice(1);
-  const [blog, setBlog] = useState(blogsList);
+  const [blogs, setBlogs] = useState([]);
 
-  const navigate = useNavigate()
-  useEffect(() => {
-    if (location === "") {
-      setBlog(blogsList);
+  const getBlogs = async () => {
+    const res = await getAllBlogsApi();
+    if (res.data) {
+      setBlogs(res.data);
     } else {
-      setBlog(
-        blogsList.filter((li) => li.category.toLowerCase().includes(location))
-      );
+      alert(res.response.data.message);
     }
-    if(!localStorage.getItem("name")){
-      navigate('/login');
+  };
+
+  useEffect(() => {
+    getBlogs();
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
     }
     // eslint-disable-next-line
-  }, [location]);
-  
+  }, []);
+
   return (
-    <section className="text-gray-600 body-font bg-dark" style={{minHeight:'100vh'}}>
+    <section
+      className="text-gray-600 body-font bg-dark"
+      style={{ minHeight: "100vh" }}
+    >
       <div className="container px-5 py-12 mx-auto">
         <div className="flex flex-wrap -m-4">
-          {blog &&
-            blog.length > 0 &&
-            blog.map((blo) => <BlogItem key={blo.id} blog={blo} blogs={blogsList} setBlogs={setBlogsList} />)}
+          {blogs && blogs.length > 0 ? (
+            blogs
+              .filter((blog) => blog.category.toLowerCase().includes(location))
+              .map((blog) => <BlogItem key={blog._id} blog={blog} />)
+          ) : (
+            <p className="text-center mt-5">Trouble finding blogs</p>
+          )}
         </div>
       </div>
     </section>

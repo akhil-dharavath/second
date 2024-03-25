@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { login } from "../config/login";
+import { addCommentApi } from "../api/blogs";
+import { getUserApi } from "../api/authentication";
 
 const BlogItem = ({
   blog: {
@@ -14,15 +14,12 @@ const BlogItem = ({
     title,
     createdAt,
     authorName,
-    authorAvatar,
     cover,
     category,
-    id,
+    _id,
     likes,
     comments,
   },
-  blogs,
-  setBlogs,
 }) => {
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
@@ -37,40 +34,44 @@ const BlogItem = ({
   };
 
   const [comment, setComment] = useState("");
-  const navigate = useNavigate();
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (comment === "") {
       return;
     }
-    const okay = {
-      description,
-      title,
-      createdAt,
-      authorName,
-      authorAvatar,
-      cover,
-      category,
-      id,
-      likes,
-      comments: [
-        ...comments,
-        { user: Number(localStorage.getItem("userid")), comment },
-      ],
-    };
-    const old = blogs.filter((blo) => blo.id !== okay.id);
-    setBlogs([okay, ...old]);
-    const subCategory = category.split(" ");
-    setComment("");
-    navigate(`/${subCategory[0].toLowerCase()}`);
+    const res = await addCommentApi(_id, comment);
+    if (res.data) {
+      handleClose();
+      window.location.reload();
+    } else {
+      alert(res.response.data.message);
+    }
   };
 
+  const [users, setUsers] = useState({});
   useEffect(() => {
-    navigate("/");
-    handleClose();
-    // setBlogs(blogs);
+    const fetchUser = async (id) => {
+      const res = await getUserApi(id);
+      if (res.data) {
+        setUsers((prevUsers) => ({
+          ...prevUsers,
+          [id]: res.data.username,
+        }));
+      } else {
+        console.log(res);
+        setUsers((prevUsers) => ({
+          ...prevUsers,
+          [id]: "Unknown",
+        }));
+      }
+    };
+    comments.forEach((comment) => {
+      if (!users[comment.user]) {
+        fetchUser(comment.user);
+      }
+    });
     // eslint-disable-next-line
-  }, [blogs]);
+  }, [comments]);
 
   return (
     <div className="p-4 md:w-1/3">
@@ -94,7 +95,7 @@ const BlogItem = ({
           </p>
           <div className="flex items-center flex-wrap ">
             <a
-              href={`/blog/${id}`}
+              href={`/blog/${_id}`}
               className="text-indigo-500 inline-flex items-center md:mb-2 lg:mb-0"
             >
               Learn More
@@ -173,11 +174,7 @@ const BlogItem = ({
                       }}
                     />
                     <div className="text-black">
-                      <b>
-                        {login.length > 0 &&
-                          login.filter((user) => user.id === comment.user)[0]
-                            .name}
-                      </b>
+                      <b>{users[comment.user]}</b>
                       <br />
                       {comment.comment}
                     </div>

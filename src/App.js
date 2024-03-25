@@ -2,8 +2,6 @@ import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Blogs from "./pages/Blogs";
 import Navbar from "./components/Navbar";
-import { blogs } from "./config/blogs";
-import { useState } from "react";
 import Blog from "./pages/Blog";
 import PageNotFound from "./pages/PageNotFound";
 import Login from "./pages/Login";
@@ -24,154 +22,23 @@ const sections = [
 ];
 
 function App() {
-  const [blogsList, setBlogsList] = useState(blogs);
-  const [disabledAccts, setDisabledAccts] = useState([]);
-
   return (
     <BrowserRouter>
-      <Navbar
-        sections={sections}
-        blogs={blogsList}
-        setBlogs={setBlogsList}
-        setDisabledAccts={setDisabledAccts}
-      />
+      <Navbar sections={sections} />
       <Routes>
-        <Route
-          exact
-          path="/"
-          element={
-            <Blogs title="" blogsList={blogsList} setBlogsList={setBlogsList} />
-          }
-        />
-        <Route
-          exact
-          path="academic"
-          element={
-            <Blogs
-              title="Academic"
-              blogsList={blogsList}
-              setBlogsList={setBlogsList}
-            />
-          }
-        />
-        <Route
-          exact
-          path="career"
-          element={
-            <Blogs
-              title="Career"
-              blogsList={blogsList}
-              setBlogsList={setBlogsList}
-            />
-          }
-        />
-        <Route
-          exact
-          path="campus"
-          element={
-            <Blogs
-              title="Campus"
-              blogsList={blogsList}
-              setBlogsList={setBlogsList}
-            />
-          }
-        />
-        <Route
-          exact
-          path="culture"
-          element={
-            <Blogs
-              title="Culture"
-              blogsList={blogsList}
-              setBlogsList={setBlogsList}
-            />
-          }
-        />
-        <Route
-          exact
-          path="local"
-          element={
-            <Blogs
-              title="Local Community"
-              blogsList={blogsList}
-              setBlogsList={setBlogsList}
-            />
-          }
-        />
-        <Route
-          exact
-          path="social"
-          element={
-            <Blogs
-              title="Social"
-              blogsList={blogsList}
-              setBlogsList={setBlogsList}
-            />
-          }
-        />
-        <Route
-          exact
-          path="sports"
-          element={
-            <Blogs
-              title="Sports"
-              blogsList={blogsList}
-              setBlogsList={setBlogsList}
-            />
-          }
-        />
-        <Route
-          exact
-          path="health"
-          element={
-            <Blogs
-              title="Health and Wellness"
-              blogsList={blogsList}
-              setBlogsList={setBlogsList}
-            />
-          }
-        />
-        <Route
-          exact
-          path="technology"
-          element={
-            <Blogs
-              title="Technology"
-              blogsList={blogsList}
-              setBlogsList={setBlogsList}
-            />
-          }
-        />
-        <Route
-          exact
-          path="travel"
-          element={
-            <Blogs
-              title="Travel"
-              blogsList={blogsList}
-              setBlogsList={setBlogsList}
-            />
-          }
-        />
-        <Route
-          exact
-          path="alumni"
-          element={
-            <Blogs
-              title="Alumni"
-              blogsList={blogsList}
-              setBlogsList={setBlogsList}
-            />
-          }
-        />
-        <Route
-          exact
-          path="/blog/:id"
-          element={<Blog blogs={blogsList} setBlogs={setBlogsList} />}
-        />
-        <Route exact path="*" element={<PageNotFound />} />
-        <Route exact path="/login" element={<Login disabledAccts={disabledAccts} />} />
-        <Route exact path="/register" element={<Register />} />
+        <Route path="/" element={<Blogs title="" />} />
+        {sections.map((section) => (
+          <Route
+            key={section.url}
+            exact
+            path={`${section.url}`}
+            element={<Blogs title={section.title} />}
+          />
+        ))}
+        <Route path="/blog/:id" element={<Blog />} />
+        <Route path="*" element={<PageNotFound />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );
