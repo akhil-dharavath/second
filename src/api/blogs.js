@@ -70,10 +70,40 @@ const addCommentApi = async (id, comment) => {
   }
 };
 
+const subscribeApi = async (id) => {
+  const authtoken = localStorage.getItem("token");
+  try {
+    const response = await axios({
+      headers: { "content-type": "application/json", authtoken },
+      url: `${process.env.REACT_APP_URL}/blogs/subscribe/${id}`,
+      method: "PUT",
+    });
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
+
+const unSubscribeApi = async (id) => {
+  const authtoken = localStorage.getItem("token");
+  try {
+    const response = await axios({
+      headers: { "content-type": "application/json", authtoken },
+      url: `${process.env.REACT_APP_URL}/blogs/unsubscribe/${id}`,
+      method: "PUT",
+    });
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
+
 export {
   getAllBlogsApi,
   createBlogApi,
   getOneBlogApi,
   deleteBlogApi,
   addCommentApi,
+  subscribeApi,
+  unSubscribeApi,
 };

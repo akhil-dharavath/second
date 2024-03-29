@@ -25,7 +25,7 @@ import {
 } from "../api/authentication";
 import { createBlogApi } from "../api/blogs";
 
-const Navbar = ({ sections }) => {
+const Navbar = ({ sections, search, setSearch }) => {
   const location = useLocation();
 
   const navigate = useNavigate();
@@ -116,7 +116,7 @@ const Navbar = ({ sections }) => {
       alert(resp.response.data.message);
     }
   };
-  
+
   const handleEnableDisableUser = async (userId, enable) => {
     if (enable) {
       await enableUser(userId);
@@ -142,19 +142,30 @@ const Navbar = ({ sections }) => {
             to={"/"}
             className="flex title-font font-medium items-center text-gray-900 mb-0 md:mb-0"
           >
-            <span className="ml-3 text-xl">Blogs</span>
+            <span className="ml-2 text-xl">Blogs</span>
           </Link>
-          <nav className="md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-gray-400	flex flex-wrap items-center text-base justify-center">
+          <nav className="md:mr-auto md:ml-2 md:py-1 md:pl-2 md:border-gray-400	flex flex-wrap items-center text-base justify-center">
             {sections.map((section) => (
               <Link
                 key={section.url}
                 to={`/${section.url}`}
-                className="mr-5 hover:text-gray-900"
+                className="mr-3 hover:text-gray-900"
               >
                 {section.title}
               </Link>
             ))}
           </nav>
+          <TextField
+            size="small"
+            sx={{
+              width: 180,
+              background: "white",
+              marginRight: 2,
+              borderRadius: 1,
+            }}
+            value={search}
+            onChange={(e)=>setSearch(e.target.value)}
+          />
           <a
             className="nav-link dropdown-toggle"
             href="/"
@@ -183,7 +194,9 @@ const Navbar = ({ sections }) => {
               </Link>
             </li>
             <li>
-              <hr className="dropdown-divider" />
+              <Link to={"/unsubscribed"} className="dropdown-item">
+                Unsubscribed Blogs
+              </Link>
             </li>
             {user && user.role === "Administrator" && (
               <>
@@ -325,12 +338,6 @@ const Navbar = ({ sections }) => {
                   >
                     <Typography>{user.username}</Typography>
                     <Checkbox
-                      // defaultChecked={user.enable ? true : false}
-                      // onChange={() =>
-                      //   user.enable
-                      //     ? disableUser(user._id)
-                      //     : enableUser(user._id)
-                      // }
                       defaultChecked={user.enable ? true : false}
                       onChange={() =>
                         handleEnableDisableUser(user._id, !user.enable)

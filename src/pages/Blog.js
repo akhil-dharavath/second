@@ -2,12 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Link } from "@mui/material";
 import { getUserApi } from "../api/authentication";
-import { deleteBlogApi, getOneBlogApi } from "../api/blogs";
+import {
+  deleteBlogApi,
+  getOneBlogApi,
+  subscribeApi,
+  unSubscribeApi,
+} from "../api/blogs";
 
 const Blog = () => {
   const { id } = useParams();
   const [blog, setBlog] = useState(null);
   const [user, setUser] = useState({});
+  const [subscribed, setSubscribed] = useState(null);
 
   const getBlog = async () => {
     const res = await getOneBlogApi(id);
@@ -22,6 +28,8 @@ const Blog = () => {
     const res = await getUserApi();
     if (res.data) {
       setUser(res.data);
+      const count = res.data.unSubscribed.filter((sub) => sub === id).length;
+      setSubscribed(count === 0);
     } else {
       alert(res.response.data.messege);
     }
@@ -42,18 +50,48 @@ const Blog = () => {
       alert(res.response.data.message);
     }
   };
+  const handleSubscribe = async () => {
+    const res = await subscribeApi(id);
+    if (res.data) {
+      setSubscribed(true);
+    } else {
+      alert(res.response.data.message);
+    }
+  };
+
+  const handleUnSubscribe = async () => {
+    const res = await unSubscribeApi(id);
+    if (res.data) {
+      setSubscribed(false);
+    } else {
+      alert(res.response.data.message);
+    }
+  };
 
   return (
     <div className="blog-post bg-dark" style={{ minHeight: "100vh" }}>
-      {user && user.role === "Moderator" && (
+      <div style={{ width: "auto" }}>
         <Button
-          color="error"
-          className="mx-5 mt-3"
-          onClick={() => handleDelete()}
+          color="primary"
+          variant="outlined"
+          sx={{ width: "auto" }}
+          className="mx-2"
+          onClick={() => (subscribed ? handleUnSubscribe() : handleSubscribe())}
         >
-          Delete Post
+          {subscribed ? "Unsubscribe" : "Subscribe"}
         </Button>
-      )}
+        {user && user.role === "Moderator" && (
+          <Button
+            color="error"
+            variant="outlined"
+            sx={{ width: "auto" }}
+            className="mx-2"
+            onClick={() => handleDelete()}
+          >
+            Delete Blog
+          </Button>
+        )}
+      </div>
       <section className="text-gray-600 body-font overflow-hidden">
         <div className="container px-5 py-5 mx-auto">
           <div className="flex flex-wrap -m-12 mx-auto">

@@ -6,7 +6,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { addCommentApi } from "../api/blogs";
-import { getUserApi } from "../api/authentication";
+import { getAllUsers } from "../api/authentication";
 
 const BlogItem = ({
   blog: {
@@ -49,29 +49,18 @@ const BlogItem = ({
   };
 
   const [users, setUsers] = useState({});
+  const fetchAllUsers = async () => {
+    const res = await getAllUsers();
+    if (res.data) {
+      setUsers(res.data);
+    } else {
+      alert("You are not Authorized");
+    }
+  };
   useEffect(() => {
-    const fetchUser = async (id) => {
-      const res = await getUserApi(id);
-      if (res.data) {
-        setUsers((prevUsers) => ({
-          ...prevUsers,
-          [id]: res.data.username,
-        }));
-      } else {
-        console.log(res);
-        setUsers((prevUsers) => ({
-          ...prevUsers,
-          [id]: "Unknown",
-        }));
-      }
-    };
-    comments.forEach((comment) => {
-      if (!users[comment.user]) {
-        fetchUser(comment.user);
-      }
-    });
+    fetchAllUsers();
     // eslint-disable-next-line
-  }, [comments]);
+  }, []);
 
   return (
     <div className="p-4 md:w-1/3">
@@ -174,7 +163,15 @@ const BlogItem = ({
                       }}
                     />
                     <div className="text-black">
-                      <b>{users[comment.user]}</b>
+                      <b>
+                        {users &&
+                        users.length > 0 &&
+                        users.filter((user) => user._id === comment.user)
+                          .length > 0
+                          ? users.filter((user) => user._id === comment.user)[0]
+                              .username
+                          : "Unknown"}
+                      </b>
                       <br />
                       {comment.comment}
                     </div>
