@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { addCommentApi } from "../api/blogs";
+import { addCommentApi, openaiCommentApi } from "../api/blogs";
 import { getAllUsers } from "../api/authentication";
 
 const BlogItem = ({
@@ -57,6 +56,16 @@ const BlogItem = ({
       alert("You are not Authorized");
     }
   };
+
+  const generateComment = async () => {
+    const res = await openaiCommentApi(title, description);
+    if (res.data) {
+      setComment(res.data);
+    } else {
+      alert(res.response.data.message);
+    }
+  };
+
   useEffect(() => {
     fetchAllUsers();
     // eslint-disable-next-line
@@ -145,61 +154,66 @@ const BlogItem = ({
       >
         <DialogTitle id="responsive-dialog-title">Comments</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            <div className="comments">
-              {comments.length > 0 &&
-                comments.map((comment, index) => (
-                  // <div key={index}>{comment.user} {comment.comment}</div>
-                  <div key={index} className="d-flex">
-                    <img
-                      src={require("../assets/author.jpg")}
-                      alt="author"
-                      style={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: "50%",
-                        marginRight: 10,
-                        marginBottom: 10,
-                      }}
-                    />
-                    <div className="text-black">
-                      <b>
-                        {users &&
-                        users.length > 0 &&
-                        users.filter((user) => user._id === comment.user)
-                          .length > 0
-                          ? users.filter((user) => user._id === comment.user)[0]
-                              .username
-                          : "Unknown"}
-                      </b>
-                      <br />
-                      {comment.comment}
-                    </div>
+          <div className="comments">
+            {comments.length > 0 &&
+              comments.map((comment, index) => (
+                <div key={index} className="d-flex">
+                  <img
+                    src={require("../assets/author.jpg")}
+                    alt="author"
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: "50%",
+                      marginRight: 10,
+                      marginBottom: 10,
+                    }}
+                  />
+                  <div className="text-black">
+                    <b>
+                      {users &&
+                      users.length > 0 &&
+                      users.filter((user) => user._id === comment.user).length >
+                        0
+                        ? users.filter((user) => user._id === comment.user)[0]
+                            .username
+                        : "Unknown"}
+                    </b>
+                    <br />
+                    {comment.comment}
                   </div>
-                ))}
-              <form
-                onSubmit={handleSubmit}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                  width: "100%",
-                  position: "relative",
-                }}
-              >
-                <textarea
-                  placeholder="Comment"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  className="comment-input"
-                  rows={4}
-                />
+                </div>
+              ))}
+            <form
+              onSubmit={handleSubmit}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              <textarea
+                placeholder="Comment"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="comment-input"
+                rows={4}
+              />
+              <div className="comment-buttons">
+                <button
+                  className="btn btn-primary my-2 mx-2 w-auto text-white"
+                  onClick={() => generateComment()}
+                >
+                  Auto Generate
+                </button>
                 <button className="btn btn-primary my-2 w-auto" type="submit">
                   Post
                 </button>
-              </form>
-            </div>
-          </DialogContentText>
+              </div>
+            </form>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

@@ -163,6 +163,7 @@ const Navbar = ({ sections, search, setSearch }) => {
               marginRight: 2,
               borderRadius: 1,
             }}
+            placeholder="Search blog"
             value={search}
             onChange={(e)=>setSearch(e.target.value)}
           />

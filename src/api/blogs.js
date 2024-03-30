@@ -62,7 +62,7 @@ const addCommentApi = async (id, comment) => {
       headers: { "content-type": "application/json", authtoken },
       url: `${process.env.REACT_APP_URL}/blogs/${id}`,
       method: "POST",
-      data: JSON.stringify({comment}),
+      data: JSON.stringify({ comment }),
     });
     return response;
   } catch (error) {
@@ -98,6 +98,33 @@ const unSubscribeApi = async (id) => {
   }
 };
 
+const openaiCommentApi = async (title, description) => {
+  try {
+    const response = await axios({
+      headers: { "content-type": "application/json" },
+      url: `${process.env.REACT_APP_URL}/blogs/comment/openai-comment`,
+      method: "POST",
+      data: JSON.stringify({ title, description }),
+    });
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
+
+const getTopStoriesApi = async (city) => {
+  try {
+    const response = await axios({
+      headers: { "content-type": "application/json" },
+      url: `${process.env.REACT_APP_URL}/blogs/stories/${city}`,
+      method: "GET",
+    });
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
+
 export {
   getAllBlogsApi,
   createBlogApi,
@@ -106,4 +133,6 @@ export {
   addCommentApi,
   subscribeApi,
   unSubscribeApi,
+  openaiCommentApi,
+  getTopStoriesApi
 };

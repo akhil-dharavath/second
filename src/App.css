@@ -18,10 +18,10 @@ header a,
 .blog-post .rounded {
   background-color: rgb(99 102 241 / var(--tw-text-opacity));
 }
-.MuiPaper-root{
+.MuiPaper-root {
   background-color: white;
 }
-.comment-input{
+.comment-input {
   background-color: #f3f2f2 !important;
   border: none !important;
   padding: 8px 10px;
@@ -30,10 +30,10 @@ header a,
   border: 2px solid black !important;
   border-radius: 7px;
 }
-.comments .btn-primary{
+.comments .btn-primary {
   color: #0a58ca;
 }
-.comments .btn-primary:hover{
+.comments .btn-primary:hover {
   color: white;
 }
 
@@ -120,4 +120,8 @@ i {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+}
+
+.comment-buttons {
+  display: flex;
 }
