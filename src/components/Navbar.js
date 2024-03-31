@@ -27,6 +27,7 @@ import {
 import { createBlogApi, getEventApi, suggestApi } from "../api/blogs";
 import Spinner from "./Spinner";
 import axios from "axios";
+import { enqueueSnackbar } from "notistack";
 
 const Navbar = ({ sections, search, setSearch }) => {
   const location = useLocation();
@@ -81,6 +82,7 @@ const Navbar = ({ sections, search, setSearch }) => {
     e.preventDefault();
     const res = await createBlogApi(addPost);
     if (res.data) {
+      enqueueSnackbar("Successfully blog has been added!", { variant: "success" });
       handleClose();
       const path = addPost.category.toLowerCase();
       navigate(`/${path}`);
