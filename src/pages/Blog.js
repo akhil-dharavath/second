@@ -50,6 +50,7 @@ const Blog = () => {
       alert(res.response.data.message);
     }
   };
+  
   const handleSubscribe = async () => {
     const res = await subscribeApi(id);
     if (res.data) {

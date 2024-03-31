@@ -7,6 +7,7 @@ import PageNotFound from "./pages/PageNotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { useState } from "react";
+import { SnackbarProvider } from "notistack";
 
 const sections = [
   { title: "Academic", url: "academic" },
@@ -23,27 +24,35 @@ const sections = [
 ];
 
 function App() {
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState("");
   return (
-    <BrowserRouter>
-      <Navbar sections={sections} search={search} setSearch={setSearch} />
-      <Routes>
-        <Route path="/" element={<Blogs search={search} title="" />} />
-        <Route path="/unsubscribed" element={<Blogs search={search} title="" />} />
-        {sections.map((section) => (
+    <SnackbarProvider
+      maxSnack={3}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+    >
+      <BrowserRouter>
+        <Navbar sections={sections} search={search} setSearch={setSearch} />
+        <Routes>
+          <Route path="/" element={<Blogs search={search} title="" />} />
           <Route
-            key={section.url}
-            exact
-            path={`${section.url}`}
-            element={<Blogs search={search} title={section.title} />}
+            path="/unsubscribed"
+            element={<Blogs search={search} title="" />}
           />
-        ))}
-        <Route path="/blog/:id" element={<Blog />} />
-        <Route path="*" element={<PageNotFound />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </BrowserRouter>
+          {sections.map((section) => (
+            <Route
+              key={section.url}
+              exact
+              path={`${section.url}`}
+              element={<Blogs search={search} title={section.title} />}
+            />
+          ))}
+          <Route path="/blog/:id" element={<Blog />} />
+          <Route path="*" element={<PageNotFound />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </BrowserRouter>
+    </SnackbarProvider>
   );
 }
 
